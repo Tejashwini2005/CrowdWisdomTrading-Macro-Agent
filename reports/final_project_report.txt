@@ -1,0 +1,79 @@
+  CrowdWisdomTrading Macro Economics Agent
+ Final Project Report
+
+ 1. Project Overview
+The project explores a data-driven workflow for collecting US macroeconomic indicators, analyzing economic news sentiment, and evaluating a baseline moving-average trading strategy against a buy-and-hold benchmark.
+
+ 2. Technologies Used
+- Python
+- pandas and NumPy
+- yfinance for historical market data
+- FRED API for macroeconomic observations
+- Apify for economic calendar data
+- News ingestion and keyword-based sentiment analysis
+- Matplotlib for visualizations
+- pytest for automated testing
+
+ 3. Data Collection
+- Market data: 501 SPY daily observations from 10 October 2024 to 9 October 2026.
+- FRED data: 23 observations across unemployment, CPI, federal funds rate, and nonfarm payrolls.
+- Economic calendar: 10 events across one unique event date.
+- News: 5 articles with 5 unique URLs.
+
+ 4. Data Validation
+The SPY dataset passed the existing checks for duplicate dates, missing values, positive prices, and valid OHLC relationships.
+
+The FRED dataset passed six validation checks, including indicator coverage, date validity, missing numeric values, and duplicate date-indicator pairs.
+
+The automated test suite reported 18 passing tests.
+
+ 5. Baseline Strategy
+A 20-day versus 50-day moving-average rule generates long exposure when the short moving average exceeds the long moving average. Positions are shifted by one trading day before calculating strategy returns.
+
+Full-period results:
+- Strategy total return: 24.14%
+- Buy-and-hold total return: 38.26%
+- Strategy annualized volatility: 9.96%
+- Buy-and-hold annualized volatility: 16.51%
+- Strategy Sharpe ratio: 1.14
+- Buy-and-hold Sharpe ratio: 1.07
+- Strategy maximum drawdown: -8.68%
+- Buy-and-hold maximum drawdown: -18.76%
+
+ 6. Chronological Holdout Evaluation
+The development period contains 350 observations, from 10 October 2024 to 5 March 2026. The holdout period contains 151 observations, from 6 March 2026 to 9 October 2026.
+
+Holdout results:
+- Strategy total return: 10.45%
+- Buy-and-hold total return: 15.17%
+- Strategy annualized volatility: 10.63%
+- Buy-and-hold annualized volatility: 13.40%
+- Strategy Sharpe ratio: 1.61
+- Buy-and-hold Sharpe ratio: 1.83
+- Strategy maximum drawdown: -4.49%
+- Buy-and-hold maximum drawdown: -6.57%
+
+The strategy had lower volatility and a smaller maximum drawdown, but it underperformed buy and hold on total return, Sharpe ratio, and Sortino ratio in the holdout period.
+
+ 7. News Sentiment and Macro Readiness
+The project includes keyword-based news sentiment analysis and sentiment visualizations. The current news sample contains only five articles, and all articles received the same sentiment label. These findings are exploratory and do not validate sentiment as a trading signal.
+
+The economic calendar contains only ten events across one unique date. It is insufficient for meaningful macro-event strategy evaluation. FRED observation dates also do not necessarily represent public release dates, and the collected data do not include consensus forecasts.
+
+ 8. Limitations
+- Transaction costs, slippage, and taxes are excluded.
+- A zero risk-free rate is assumed in the reported Sharpe and Sortino calculations.
+- The holdout evaluation is a single chronological split, not rolling walk-forward validation.
+- The news sample and economic calendar coverage are limited.
+- Keyword sentiment is not a validated market predictor.
+- FRED observations may be revised and cannot be assumed to have been publicly available on their observation dates.
+- Historical performance does not establish future profitability.
+
+ 9. Conclusion
+The project implements a working prototype for market-data ingestion, macroeconomic data collection, basic news sentiment analysis, strategy evaluation, visualization, and data-quality reporting.
+
+The baseline strategy showed lower volatility and smaller drawdowns than buy and hold over the full historical period, but lower total return. In the holdout period, it also underperformed buy and hold on return and risk-adjusted ratios.
+
+Further work should expand the economic calendar and news datasets, incorporate release-time-aware and point-in-time data, evaluate transaction costs, and conduct repeated chronological validation before drawing conclusions about the predictive value of macroeconomic signals.
+
+This project is for research and educational purposes and does not establish a profitable trading system.

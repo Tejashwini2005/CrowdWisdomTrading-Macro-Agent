@@ -1,0 +1,29 @@
+FRED MACROECONOMIC DATA QUALITY REPORT
+========================================
+Input file: data\raw\fred_macro_data.csv
+Total rows: 23
+Date range: 2026-04-01 00:00:00 to 2026-09-01 00:00:00
+Missing dates: 0
+Missing numeric values: 0
+Duplicate date/indicator pairs: 0
+Missing expected indicators: []
+
+Observations by indicator:
+- CPIAUCSL: 5
+- FEDFUNDS: 6
+- PAYEMS: 6
+- UNRATE: 6
+
+Validation checks:
+- PASS: File exists
+- PASS: Dataset is not empty
+- PASS: All expected indicators present
+- PASS: No invalid dates
+- PASS: No missing numeric values
+- PASS: No duplicate date/indicator pairs
+
+LIMITATIONS
+- Observation dates are not necessarily public release dates.
+- Historical values may be revised.
+- FRED data do not provide consensus forecasts in this dataset.
+- Passing data checks does not establish predictive trading value.

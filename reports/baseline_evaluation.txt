@@ -1,0 +1,20 @@
+BASELINE STRATEGY EVALUATION
+Period: 2024-10-10 to 2026-10-09
+Observations: 501
+
+METRIC | STRATEGY | BUY AND HOLD
+Total return (%) | 24.14 | 38.26
+Annualized return (%) | 11.49 | 17.70
+Annualized volatility (%) | 9.96 | 16.51
+Sharpe ratio | 1.14 | 1.07
+Sortino ratio | 1.64 | 1.60
+Maximum drawdown (%) | -8.68 | -18.76
+
+Completed long trades: 4
+Trade win rate (%): 50.00
+
+Limitations:
+- Historical in-sample evaluation; not out-of-sample validation.
+- Zero risk-free rate assumed for Sharpe and Sortino ratios.
+- Transaction costs, slippage and taxes are excluded.
+- Results do not establish future profitability.

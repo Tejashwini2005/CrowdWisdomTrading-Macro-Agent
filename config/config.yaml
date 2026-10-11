@@ -1,0 +1,20 @@
+
+
+project:
+  name: "CrowdWisdomTrading Macro Economics Agent"
+  timezone: "UTC"
+  historical_days: 180
+
+macro_calendar:
+  actor_id: "scrapers_lat/economic-calendar-scraper"
+  countries:
+    - "United States"
+  impact_min: "Medium"
+  max_results_per_run: 10
+
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+
+validation:
+  walk_forward_splits: 5

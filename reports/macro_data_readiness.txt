@@ -1,0 +1,26 @@
+MACRO DATA READINESS REPORT
+
+CALENDAR
+Total events: 10
+Valid event dates: 10
+Unique event dates: 1
+Events with actual and forecast: 3
+Unique event names: 9
+High-impact events: 4
+
+NEWS
+Total articles: 5
+Unique article URLs: 5
+Valid publication timestamps: 5
+Unique sentiment labels: 1
+
+ASSESSMENT
+Calendar coverage is too small for meaningful strategy evaluation.
+News sample is small; sentiment findings should be treated as exploratory.
+Actual-versus-forecast observations are available for inspection.
+
+IMPORTANT
+- Event dates are not necessarily the exact public-release timestamps.
+- Do not use actual values before their release time.
+- Keyword sentiment is a baseline, not a validated market predictor.
+- These sample datasets do not establish trading profitability.

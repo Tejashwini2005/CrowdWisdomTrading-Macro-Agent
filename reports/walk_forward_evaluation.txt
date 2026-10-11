@@ -1,0 +1,24 @@
+CHRONOLOGICAL HOLDOUT EVALUATION
+
+Development period: 2024-10-10 to 2026-03-05
+Development observations: 350
+
+Holdout period: 2026-03-06 to 2026-10-09
+Holdout observations: 151
+
+METRIC | STRATEGY | BUY AND HOLD
+Total return (%) | 10.45 | 15.17
+Annualized return (%) | 18.05 | 26.58
+Annualized volatility (%) | 10.63 | 13.40
+Sharpe ratio | 1.61 | 1.83
+Sortino ratio | 2.50 | 2.87
+Maximum drawdown (%) | -4.49 | -6.57
+
+Methodology and limitations:
+- Chronological 70% development / 30% holdout split.
+- Moving-average rules remain fixed; no holdout tuning.
+- Moving averages use current and past closing prices only.
+- Positions are shifted by one trading day.
+- Transaction costs, slippage and taxes are excluded.
+- Holdout performance is historical and may not generalize.
+- This is a single holdout test, not rolling walk-forward validation.
