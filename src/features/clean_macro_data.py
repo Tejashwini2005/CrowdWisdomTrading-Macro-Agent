@@ -14,25 +14,25 @@ PLACEHOLDERS = ["&nbsp;", "nbsp", "N/A", "n/a", ""]
 
 
 def clean_macro_data(data: pd.DataFrame) -> pd.DataFrame:
-    """Normalize missing values and data types in macro calendar records."""
+    """Normalize calendar fields, timestamps, and surprise values."""
     cleaned = data.copy()
 
-    # Remove whitespace and HTML placeholder values.
+    # Normalize text and common missing-value placeholders.
     for column in cleaned.select_dtypes(include=["object", "str"]).columns:
+        cleaned[column] = cleaned[column].astype("string").str.strip()
         cleaned[column] = cleaned[column].replace(
-            r"^\s*(?:&nbsp;|nbsp|N/A)?\s*$",
+            r"(?i)^\s*(?:&nbsp;|nbsp|n/a)?\s*$",
             pd.NA,
             regex=True,
         )
-        cleaned[column] = cleaned[column].astype("string").str.strip()
 
-    # Parse dates; invalid dates become missing.
+    # Parse event dates without removing otherwise valid records yet.
     if "eventDate" in cleaned.columns:
         cleaned["eventDate"] = pd.to_datetime(
             cleaned["eventDate"], errors="coerce"
         )
 
-    # Convert numeric output fields while preserving original text fields.
+    # Normalize numeric fields.
     numeric_columns = [
         "actualValue",
         "forecastValue",
@@ -50,7 +50,44 @@ def clean_macro_data(data: pd.DataFrame) -> pd.DataFrame:
     if "impact" in cleaned.columns:
         cleaned["impact"] = cleaned["impact"].str.title()
 
-    # Exclude records without an event name or valid event date.
+    
+    # Combine event date and GMT time into a UTC timestamp.
+    if "eventDate" in cleaned.columns and "timeGmt" in cleaned.columns:
+        date_text = pd.to_datetime(
+            cleaned["eventDate"], errors="coerce"
+        ).dt.strftime("%Y-%m-%d")
+
+        time_text = (
+            cleaned["timeGmt"]
+            .astype("string")
+            .str.strip()
+            .str.replace(r"\s*GMT$", "", regex=True, case=False)
+        )
+
+        timestamp_text = date_text + " " + time_text
+
+        cleaned["eventTimestampUtc"] = pd.to_datetime(
+            timestamp_text,
+            format="%Y-%m-%d %H:%M",
+            errors="coerce",
+            utc=True,
+        )
+
+
+    # Calculate the surprise only when both values are available.
+    if {"actualValue", "forecastValue"}.issubset(cleaned.columns):
+        calculated_surprise = (
+            cleaned["actualValue"] - cleaned["forecastValue"]
+        )
+
+        if "surpriseVsForecast" in cleaned.columns:
+            cleaned["surpriseVsForecast"] = cleaned[
+                "surpriseVsForecast"
+            ].fillna(calculated_surprise)
+        else:
+            cleaned["surpriseVsForecast"] = calculated_surprise
+
+    # Remove only records missing essential event identity fields.
     required = ["eventName", "eventDate"]
     for column in required:
         if column in cleaned.columns:
@@ -74,10 +111,20 @@ def main() -> None:
     print(f"Removed rows: {len(raw) - len(cleaned)}")
     print(f"Saved cleaned data to: {PROCESSED_PATH.relative_to(ROOT)}")
 
-    if "actual" in cleaned.columns:
-        print("Missing actual values:", cleaned["actual"].isna().sum())
-    if "forecast" in cleaned.columns:
-        print("Missing forecast values:", cleaned["forecast"].isna().sum())
+    if "actualValue" in cleaned.columns:
+        print("Missing actual values:", cleaned["actualValue"].isna().sum())
+    if "forecastValue" in cleaned.columns:
+        print("Missing forecast values:", cleaned["forecastValue"].isna().sum())
+    if "eventTimestampUtc" in cleaned.columns:
+        print(
+            "Invalid UTC timestamps:",
+            cleaned["eventTimestampUtc"].isna().sum(),
+        )
+    if "surpriseVsForecast" in cleaned.columns:
+        print(
+            "Available surprise values:",
+            cleaned["surpriseVsForecast"].notna().sum(),
+        )
 
 
 if __name__ == "__main__":
