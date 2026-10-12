@@ -1,8 +1,11 @@
+
 """Preview historical macro-calendar date ranges without API calls."""
 
 import sys
 from datetime import date, timedelta
 from pathlib import Path
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -11,8 +14,17 @@ from src.ingestion.date_ranges import split_date_range
 
 
 def main() -> None:
+    config_path = ROOT / "config" / "config.yaml"
+
+    with config_path.open("r", encoding="utf-8") as file:
+        config = yaml.safe_load(file)
+
+    historical_days = int(config["project"]["historical_days"])
+    if historical_days < 1:
+        raise ValueError("historical_days must be at least 1.")
+
     end = date.today()
-    start = end - timedelta(days=179)
+    start = end - timedelta(days=historical_days - 1)
 
     ranges = split_date_range(start.isoformat(), end.isoformat())
 
