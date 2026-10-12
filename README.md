@@ -133,6 +133,24 @@ The project generates six figures in `reports/figures/`:
 
 The charts describe the available samples and evaluation results; they do not establish future profitability.
 
+## Run the Local Pipeline
+
+Preview the planned stages without executing them:
+
+```powershell
+python -m src.main --dry-run
+```
+
+Run the local processing and evaluation pipeline:
+
+```powershell
+python -m src.main
+```
+
+The pipeline requires non-empty local input files: `data/raw/macro_calendar_test.csv`, `data/raw/macro_news_combined.csv`, and `data/raw/spy_historical_prices.csv`.
+
+This entry point does not perform live API ingestion. It runs local processing, strategy evaluation, walk-forward validation, and the strategy-permutation stage. Strategy charts are generated when their required processed inputs exist.
+
  Setup
 
  1. Create and activate a virtual environment
