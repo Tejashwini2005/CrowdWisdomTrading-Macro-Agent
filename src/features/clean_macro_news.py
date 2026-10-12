@@ -7,7 +7,7 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parents[2]
-INPUT_PATH = ROOT / "data" / "raw" / "macro_news_test.csv"
+INPUT_PATH = ROOT / "data" / "raw" / "macro_news_combined.csv"
 OUTPUT_PATH = ROOT / "data" / "processed" / "macro_news_clean.csv"
 
 

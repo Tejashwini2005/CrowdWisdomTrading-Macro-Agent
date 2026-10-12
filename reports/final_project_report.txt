@@ -23,7 +23,7 @@ The project compares a moving-average strategy with buy-and-hold and evaluates h
 - **Market data:** 501 SPY daily observations from 10 October 2024 to 9 October 2026.
 - **FRED data:** 23 observations across unemployment, CPI, federal funds rate, and nonfarm payrolls.
 - **Economic calendar:** 10 events across one unique event date.
-- **News:** 5 articles with 5 unique URLs, published from 4 June to 16 September 2026.
+- **News:** 10 articles in the combined test sample: 5 from Tavily and 5 from Exa. Five articles have usable publication dates and five have missing publication dates. The sample is not comprehensive historical coverage.
 
 The calendar and news samples are limited and should be treated as prototype data rather than comprehensive historical coverage.
 
@@ -103,17 +103,15 @@ The model outputs estimated daily returns and a per-configuration summary. MAE a
 
 The ML model currently uses market-derived features. It does **not** yet incorporate macroeconomic event or news sentiment features into its return predictions. The five-fold strategy evaluation in Section 7 is for the fixed moving-average strategy, while the ML model has its own chronological evaluation and fold-level error checks.
 
- 9. News Sentiment and Visualizations
+  9. Macro News Sentiment Analysis
 
-News sentiment is calculated using a keyword-based baseline method. The current sample contains five articles, all classified as negative by that method.
+News sentiment is calculated using a keyword-based baseline method. The combined test sample contains 10 articles: 5 from Tavily and 5 from Exa. Of these, 6 were classified as negative, 4 as neutral, and none as positive. Five articles have usable publication dates for daily aggregation; the other five are excluded because their publication dates are missing.
 
-Generated visualization files:
+These labels are approximate keyword-based results, not validated financial sentiment judgments.
 
-- `reports/figures/sentiment_distribution.png`
-- `reports/figures/sentiment_scores.png`
-- `reports/figures/macro_sentiment_over_time.png`
+The existing time-series chart was generated from an earlier, smaller sample. The combined news dataset and daily sentiment features are saved separately under `data/raw` and `data/processed`. Five dated articles are insufficient to establish a reliable sentiment trend or validate sentiment as a trading signal. The current ML model does not yet use macroeconomic or news-sentiment features.
 
-The time-series chart uses actual publication timestamps in UTC. Five observations over a limited period are insufficient to establish a reliable sentiment trend or validate sentiment as a trading signal.
+
 
  10. Economic Calendar and Macro Data Limitations
 
