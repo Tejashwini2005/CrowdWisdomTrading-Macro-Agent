@@ -1,4 +1,4 @@
- CrowdWisdomTrading Macro Economics Agent
+﻿ CrowdWisdomTrading Macro Economics Agent
  Final Project Report
 
  1. Project Overview
@@ -33,7 +33,7 @@ The SPY dataset passed existing checks for duplicate dates, missing values, posi
 
 The FRED dataset passed six validation checks covering indicator coverage, date validity, missing numeric values, and duplicate date-indicator pairs.
 
-The automated test suite completed with **18 passing tests** at the time of evaluation.
+The automated test suite completed with **27 passing tests** at the time of evaluation.
 
  5. Baseline Moving-Average Strategy
 
@@ -109,8 +109,7 @@ News sentiment is calculated using a keyword-based baseline method. The combined
 
 These labels are approximate keyword-based results, not validated financial sentiment judgments.
 
-The existing time-series chart was generated from an earlier, smaller sample. The combined news dataset and daily sentiment features are saved separately under `data/raw` and `data/processed`. Five dated articles are insufficient to establish a reliable sentiment trend or validate sentiment as a trading signal. The current ML model does not yet use macroeconomic or news-sentiment features.
-
+The time-series chart was regenerated from the current combined sentiment dataset. It plots five articles with valid publication dates; the other five are excluded because their publication dates are missing.
 
 
  10. Economic Calendar and Macro Data Limitations
@@ -119,7 +118,20 @@ The current economic calendar contains ten events across one unique date, so it 
 
 FRED observation dates do not necessarily equal publication or release dates. The available data do not provide a complete point-in-time record of when each value became publicly available, and some historical values can be revised.
 
- 11. Limitations and Future Work
+ 11. Visualizations
+
+The project generates six figures in reports/figures:
+
+- sentiment_distribution.png: distribution of keyword-based news sentiment labels.
+- sentiment_scores.png: sentiment scores for collected news articles.
+- macro_sentiment_over_time.png: sentiment observations over time.
+- holdout_equity_comparison.png: holdout equity comparison between the moving-average strategy and buy-and-hold.
+- walk_forward_returns.png: strategy and benchmark returns across chronological test folds.
+- configuration_holdout_returns.png: actual holdout returns for tested moving-average configurations.
+
+These charts summarize the available sample and evaluation results; they do not establish future profitability.
+
+ 12. Limitations and Future Work
 
 - Expand calendar coverage across the full requested historical period.
 - Collect more news articles and validate sentiment labels.
@@ -132,7 +144,7 @@ FRED observation dates do not necessarily equal publication or release dates. Th
 
 Historical performance and model estimates do not guarantee future results.
 
- 12. Conclusion
+ 13. Conclusion
 
 The project provides a working prototype for market-data ingestion, macroeconomic data collection, feature engineering, keyword-based sentiment analysis, baseline strategy evaluation, ML strategy-permutation predictions, chronological validation, visualization, and data-quality reporting.
 

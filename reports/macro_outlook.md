@@ -1,38 +1,64 @@
-Macro Economic Outlook
-Project: CrowdWisdomTrading Macro Economics Agent  
-Report date: 11 October 2026  
-Status: Preliminary research - not a trading recommendation
+﻿# Macro Economic Outlook
 
-1.  Executive Summary
-    The current macroeconomic calendar sample contains 10 events recorded on 7 October 2026. All 10 event timestamps were successfully parsed as UTC. However, only three events have both actual and forecast values, and the dataset covers only one unique event date. This sample is insufficient to establish a reliable macroeconomic trend or predict trading performance.
+**Project:** CrowdWisdomTrading Macro Economics Agent
+**Report date:** 12 October 2026
+**Status:** Preliminary research — not a trading recommendation
 
-2.  Observed Economic Signals
+## 1. Executive Summary
 
-- Trade Balance: Actual value was approximately -105.6 billion versus a forecast of -100.8 billion, a difference of -4.8 billion in the source units.
-- Economic Optimism: Actual value was 46.8 versus a forecast of 44.5, a positive difference of 2.3 points.
-- Atlanta Fed GDPNow: Actual and forecast values were both 3.7, indicating no difference between the reported values in this sample.
-- Other events: Several events have missing actual or forecast values. These are treated as unavailable rather than zero.
+The project combines historical SPY prices, FRED macroeconomic series, a preliminary economic-calendar sample, and news retrieved through Tavily and Exa. The pipeline demonstrates data processing, sentiment analysis, strategy evaluation, and chronological validation.
 
-These indicators measure different aspects of the economy and use different units. They should not be combined into a single bullish or bearish signal without additional analysis.
+The current data remains insufficient to establish a reliable macro-driven trading signal. The economic-calendar sample contains only 10 events from 7 October 2026, rather than the required 180-day coverage. The combined news sample contains 10 articles, and only five have usable publication dates.
 
-3.  News Sentiment
-    The current news sample contains five articles with five unique URLs and valid publication timestamps. All articles share the same sentiment label in the current baseline. This may reflect the limitations of the keyword-based method and small sample size; it does not establish the overall market's sentiment.
+## 2. Observed Economic Signals
 
-4.  Data and Model Limitations
+- **Trade Balance:** Actual value was approximately -105.6 billion versus a forecast of -100.8 billion, a difference of -4.8 billion in the source units.
+- **Economic Optimism:** Actual value was 46.8 versus a forecast of 44.5, a difference of +2.3 points.
+- **Atlanta Fed GDPNow:** The reported actual and forecast values were both 3.7 in this sample.
+- **Other events:** Several events have missing actual or forecast values. Missing values are treated as unavailable, not as zero.
 
-- The calendar sample does not yet demonstrate the required 180-day coverage.
-- Event dates and recorded times may not always represent verified public-release timestamps.
-- Actual values must not be used in features before they become publicly available.
-- Missing forecasts limit surprise calculations.
-- Keyword-based news sentiment is exploratory, not a validated market predictor.
-- Backtest results are historical and do not guarantee future performance. Transaction costs, slippage, and other practical trading constraints must be considered.
+These indicators measure different economic concepts and use different units. They should not be combined into one bullish or bearish signal without a documented normalization method and additional evidence.
 
-5. Next Steps
+## 3. News Sentiment
 
-1. Build and validate the complete 180-day economic-event dataset.
-1. Improve news retrieval and evaluate sentiment against a labelled sample.
-1. Align event timestamps, market prices, and news publication times without look-ahead leakage.
-1. Test multiple strategy configurations using rolling walk-forward validation.
-1. Report Sharpe ratio, Sortino ratio, maximum drawdown, and benchmark comparisons on genuinely out-of-sample results.
+The combined test sample contains 10 articles: five retrieved through Tavily and five through Exa. Five articles have usable publication dates, while five have missing publication dates.
 
-Conclusion: The current pipeline demonstrates preliminary data cleaning and feature engineering. More complete, time-aligned data and rigorous out-of-sample evaluation are required before drawing conclusions about macro-driven trading strategies.
+The exploratory keyword-based labels are:
+- Negative: 6 articles
+- Neutral: 4 articles
+- Positive: 0 articles
+
+These labels are approximate and depend on the keywords used. The sample is small and is not comprehensive historical news coverage. The five dated articles are insufficient to establish a reliable sentiment trend. News sentiment is not currently used as an input to the ML strategy-permutation model.
+
+## 4. Strategy and Model Evaluation
+
+The baseline 20-day/50-day moving-average strategy produced a historical total return of 24.14%, compared with 38.26% for buy-and-hold. Its Sharpe ratio was 1.14, Sortino ratio was 1.64, and maximum drawdown was -8.68%.
+
+Across five chronological test folds, the fixed moving-average strategy had mean fold total return of 4.340%, mean Sharpe ratio of 1.204, mean Sortino ratio of 1.883, and mean maximum drawdown of -4.664%. These are descriptive averages of fold metrics, not a single compounded return series.
+
+The strategy-permutation model uses market-derived features only. Its holdout mean absolute error (MAE) was 0.005124 and root mean squared error (RMSE) was 0.007019 in daily-return units. Macro-event and news features have not yet been integrated into this model. Prediction errors do not establish trading profitability.
+
+## 5. Data and Model Limitations
+
+- The calendar sample does not meet the required 180-day coverage.
+- FRED observation dates are not necessarily the dates when data became public; release-time alignment requires separate verification.
+- Actual economic values must not enter features before their public release.
+- Missing forecasts limit economic-surprise calculations.
+- Five of the ten combined news articles lack usable publication dates.
+- Keyword-based sentiment is exploratory and has not been validated against a labelled dataset.
+- Macro and news features are not yet inputs to the ML strategy-permutation model.
+- Backtests exclude transaction costs, slippage, taxes, and market impact.
+- Historical performance and model predictions do not guarantee future results.
+
+## 6. Next Steps
+
+1. Build and validate the economic-calendar dataset over the required 180-day period.
+2. Verify event publication timestamps and align event data with market data without look-ahead leakage.
+3. Improve historical news coverage and evaluate sentiment against a labelled sample.
+4. Integrate appropriately time-aligned macro and news features into the model.
+5. Compare strategy configurations with chronological walk-forward validation.
+6. Report Sharpe ratio, Sortino ratio, maximum drawdown, and benchmark comparisons on genuinely out-of-sample results.
+
+## Conclusion
+
+The project demonstrates a working preliminary data-processing and strategy-evaluation pipeline. However, calendar coverage, historical news coverage, and macro/news model integration remain incomplete. The current results should be treated as exploratory research, not as evidence of a validated macro-driven trading strategy.

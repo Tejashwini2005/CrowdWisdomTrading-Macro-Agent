@@ -9,10 +9,10 @@ Unique event names: 9
 High-impact events: 4
 
 NEWS
-Total articles: 5
-Unique article URLs: 5
+Total articles: 10
+Unique article URLs: 10
 Valid publication timestamps: 5
-Unique sentiment labels: 1
+Unique sentiment labels: 2
 
 ASSESSMENT
 Calendar coverage is too small for meaningful strategy evaluation.
