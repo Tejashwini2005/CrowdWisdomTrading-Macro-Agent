@@ -1,24 +1,79 @@
-CHRONOLOGICAL HOLDOUT EVALUATION
+FIVE-SPLIT EXPANDING-WINDOW WALK-FORWARD EVALUATION
 
-Development period: 2024-10-10 to 2026-03-05
-Development observations: 350
+Dataset period: 2024-10-10 to 2026-10-09
+Total observations: 501
+Strategy: fixed 20-day / 50-day moving-average rule
+Benchmark: buy and hold
+Risk-free rate: 0%
+Transaction costs and slippage: excluded
 
-Holdout period: 2026-03-06 to 2026-10-09
-Holdout observations: 151
+FOLD 1
+Training: 2024-10-10 to 2025-02-13 (86 observations)
+Testing:  2025-02-14 to 2025-06-13 (83 observations)
+Metric | Strategy | Buy and hold
+Total return (%) | -4.032 | -1.793
+Annualized return (%) | -11.747 | -5.346
+Annualized volatility (%) | 9.638 | 30.006
+Sharpe ratio | -1.249 | -0.037
+Sortino ratio | -1.582 | -0.057
+Maximum drawdown (%) | -7.394 | -18.755
 
-METRIC | STRATEGY | BUY AND HOLD
-Total return (%) | 10.45 | 15.17
-Annualized return (%) | 18.05 | 26.58
-Annualized volatility (%) | 10.63 | 13.40
-Sharpe ratio | 1.61 | 1.83
-Sortino ratio | 2.50 | 2.87
-Maximum drawdown (%) | -4.49 | -6.57
+FOLD 2
+Training: 2024-10-10 to 2025-06-13 (169 observations)
+Testing:  2025-06-16 to 2025-10-13 (83 observations)
+Metric | Strategy | Buy and hold
+Total return (%) | 11.699 | 11.699
+Annualized return (%) | 39.922 | 39.922
+Annualized volatility (%) | 10.228 | 10.228
+Sharpe ratio | 3.337 | 3.337
+Sortino ratio | 5.090 | 5.090
+Maximum drawdown (%) | -2.985 | -2.985
 
-Methodology and limitations:
-- Chronological 70% development / 30% holdout split.
-- Moving-average rules remain fixed; no holdout tuning.
-- Moving averages use current and past closing prices only.
-- Positions are shifted by one trading day.
-- Transaction costs, slippage and taxes are excluded.
-- Holdout performance is historical and may not generalize.
-- This is a single holdout test, not rolling walk-forward validation.
+FOLD 3
+Training: 2024-10-10 to 2025-10-13 (252 observations)
+Testing:  2025-10-14 to 2026-02-11 (83 observations)
+Metric | Strategy | Buy and hold
+Total return (%) | 4.670 | 4.670
+Annualized return (%) | 14.864 | 14.864
+Annualized volatility (%) | 11.597 | 11.597
+Sharpe ratio | 1.253 | 1.253
+Sortino ratio | 1.783 | 1.783
+Maximum drawdown (%) | -5.071 | -5.071
+
+FOLD 4
+Training: 2024-10-10 to 2026-02-11 (335 observations)
+Testing:  2026-02-12 to 2026-06-11 (83 observations)
+Metric | Strategy | Buy and hold
+Total return (%) | 3.297 | 6.910
+Annualized return (%) | 10.351 | 22.491
+Annualized volatility (%) | 9.478 | 14.742
+Sharpe ratio | 1.086 | 1.450
+Sortino ratio | 1.471 | 2.147
+Maximum drawdown (%) | -4.495 | -8.577
+
+FOLD 5
+Training: 2024-10-10 to 2026-06-11 (418 observations)
+Testing:  2026-06-12 to 2026-10-09 (83 observations)
+Metric | Strategy | Buy and hold
+Total return (%) | 6.066 | 6.066
+Annualized return (%) | 19.579 | 19.579
+Annualized volatility (%) | 11.653 | 11.653
+Sharpe ratio | 1.592 | 1.592
+Sortino ratio | 2.653 | 2.653
+Maximum drawdown (%) | -3.376 | -3.376
+
+MEAN OF FIVE TEST-FOLD METRICS
+(Descriptive average; not a single compounded return series.)
+Total return (%) | 4.340 | 5.510
+Annualized return (%) | 14.594 | 18.302
+Annualized volatility (%) | 10.519 | 15.645
+Sharpe ratio | 1.204 | 1.519
+Sortino ratio | 1.883 | 2.323
+Maximum drawdown (%) | -4.664 | -7.753
+
+LIMITATIONS
+- The moving-average strategy is fixed, not retrained per fold.
+- This evaluates the fixed strategy on five sequential test windows.
+- It does not yet satisfy the separate ML strategy-permutation requirement.
+- No transaction costs, slippage, taxes, or market-impact costs.
+- Historical results do not guarantee future performance.

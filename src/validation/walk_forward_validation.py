@@ -1,90 +1,124 @@
 
+"""Five-split expanding-window evaluation of the fixed baseline strategy."""
 
 from pathlib import Path
 
 import pandas as pd
+from sklearn.model_selection import TimeSeriesSplit
 
 from src.validation.evaluate_strategy import calculate_metrics
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-INPUT_FILE = (
-    PROJECT_ROOT / "data" / "processed" / "baseline_strategy_results.csv"
-)
-OUTPUT_FILE = (
-    PROJECT_ROOT / "data" / "processed" / "baseline_holdout_results.csv"
-)
+INPUT_FILE = PROJECT_ROOT / "data" / "processed" / "baseline_strategy_results.csv"
+OUTPUT_DIR = PROJECT_ROOT / "data" / "processed"
+FOLDS_FILE = OUTPUT_DIR / "walk_forward_folds.csv"
 REPORT_FILE = PROJECT_ROOT / "reports" / "walk_forward_evaluation.txt"
 
 
 def main() -> None:
+    if not INPUT_FILE.exists():
+        raise FileNotFoundError(f"Results file not found: {INPUT_FILE}")
+
     df = pd.read_csv(INPUT_FILE, parse_dates=["Date"])
-    df = df.sort_values("Date").reset_index(drop=True)
+    df = df.sort_values("Date").drop_duplicates("Date").reset_index(drop=True)
+
+    required = {"Date", "strategy_return", "market_return"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(f"Missing required columns: {sorted(missing)}")
 
     if len(df) < 100:
-        raise ValueError("Not enough observations for chronological validation.")
+        raise ValueError("Not enough observations for five-split validation.")
 
-    # Reserve the final 30% as unseen holdout data.
-    split_index = int(len(df) * 0.70)
-    development = df.iloc[:split_index].copy()
-    holdout = df.iloc[split_index:].copy()
-
-    if holdout.empty:
-        raise ValueError("The holdout period is empty.")
-
-    # Indicators and signals were computed causally from historical data.
-    # Do not tune strategy parameters using holdout results.
-    holdout["strategy_equity"] = (
-        1 + holdout["strategy_return"]
-    ).cumprod()
-    holdout["buy_hold_equity"] = (
-        1 + holdout["market_return"]
-    ).cumprod()
-
-    holdout.to_csv(OUTPUT_FILE, index=False)
-
-    strategy_metrics = calculate_metrics(holdout["strategy_return"])
-    benchmark_metrics = calculate_metrics(holdout["market_return"])
-
-    lines = [
-        "CHRONOLOGICAL HOLDOUT EVALUATION",
+    # Each test window follows its training window in chronological order.
+    splitter = TimeSeriesSplit(n_splits=5)
+    fold_rows = []
+    report_lines = [
+        "FIVE-SPLIT EXPANDING-WINDOW WALK-FORWARD EVALUATION",
         "",
-        f"Development period: {development['Date'].min().date()} "
-        f"to {development['Date'].max().date()}",
-        f"Development observations: {len(development)}",
+        f"Dataset period: {df['Date'].min().date()} to {df['Date'].max().date()}",
+        f"Total observations: {len(df)}",
+        "Strategy: fixed 20-day / 50-day moving-average rule",
+        "Benchmark: buy and hold",
+        "Risk-free rate: 0%",
+        "Transaction costs and slippage: excluded",
         "",
-        f"Holdout period: {holdout['Date'].min().date()} "
-        f"to {holdout['Date'].max().date()}",
-        f"Holdout observations: {len(holdout)}",
-        "",
-        "METRIC | STRATEGY | BUY AND HOLD",
     ]
 
-    for metric in strategy_metrics:
-        lines.append(
-            f"{metric} | {strategy_metrics[metric]:.2f} "
-            f"| {benchmark_metrics[metric]:.2f}"
-        )
+    for fold_number, (train_idx, test_idx) in enumerate(
+        splitter.split(df), start=1
+    ):
+        train = df.iloc[train_idx]
+        test = df.iloc[test_idx].copy()
 
-    lines.extend([
-        "",
-        "Methodology and limitations:",
-        "- Chronological 70% development / 30% holdout split.",
-        "- Moving-average rules remain fixed; no holdout tuning.",
-        "- Moving averages use current and past closing prices only.",
-        "- Positions are shifted by one trading day.",
-        "- Transaction costs, slippage and taxes are excluded.",
-        "- Holdout performance is historical and may not generalize.",
-        "- This is a single holdout test, not rolling walk-forward validation.",
+        # Metrics are calculated only on this fold's unseen test window.
+        strategy_metrics = calculate_metrics(test["strategy_return"])
+        benchmark_metrics = calculate_metrics(test["market_return"])
+
+        fold_rows.append({
+            "fold": fold_number,
+            "train_start": train["Date"].min().date(),
+            "train_end": train["Date"].max().date(),
+            "train_observations": len(train),
+            "test_start": test["Date"].min().date(),
+            "test_end": test["Date"].max().date(),
+            "test_observations": len(test),
+            **{f"strategy_{k}": v for k, v in strategy_metrics.items()},
+            **{f"benchmark_{k}": v for k, v in benchmark_metrics.items()},
+        })
+
+        report_lines.extend([
+            f"FOLD {fold_number}",
+            f"Training: {train['Date'].min().date()} to "
+            f"{train['Date'].max().date()} ({len(train)} observations)",
+            f"Testing:  {test['Date'].min().date()} to "
+            f"{test['Date'].max().date()} ({len(test)} observations)",
+            "Metric | Strategy | Buy and hold",
+        ])
+
+        for metric in strategy_metrics:
+            report_lines.append(
+                f"{metric} | {strategy_metrics[metric]:.3f} "
+                f"| {benchmark_metrics[metric]:.3f}"
+            )
+        report_lines.append("")
+
+    folds = pd.DataFrame(fold_rows)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    REPORT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    folds.to_csv(FOLDS_FILE, index=False)
+
+    # Summary is the mean of fold-level metrics, not a compounded portfolio.
+    metric_names = list(calculate_metrics(df["strategy_return"]).keys())
+    report_lines.extend([
+        "MEAN OF FIVE TEST-FOLD METRICS",
+        "(Descriptive average; not a single compounded return series.)",
     ])
 
-    report = "\n".join(lines)
-    REPORT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_FILE.write_text(report, encoding="utf-8")
+    for metric in metric_names:
+        strategy_col = f"strategy_{metric}"
+        benchmark_col = f"benchmark_{metric}"
+        report_lines.append(
+            f"{metric} | {folds[strategy_col].mean():.3f} "
+            f"| {folds[benchmark_col].mean():.3f}"
+        )
 
+    report_lines.extend([
+        "",
+        "LIMITATIONS",
+        "- The moving-average strategy is fixed, not retrained per fold.",
+        "- This evaluates the fixed strategy on five sequential test windows.",
+        "- It does not yet satisfy the separate ML strategy-permutation requirement.",
+        "- No transaction costs, slippage, taxes, or market-impact costs.",
+        "- Historical results do not guarantee future performance.",
+    ])
+
+    report = "\n".join(report_lines)
+    REPORT_FILE.write_text(report, encoding="utf-8")
     print(report)
-    print(f"\nHoldout data saved to: {OUTPUT_FILE}")
-    print(f"Evaluation report saved to: {REPORT_FILE}")
+    print(f"\nFold data saved to: {FOLDS_FILE}")
+    print(f"Report saved to: {REPORT_FILE}")
 
 
 if __name__ == "__main__":

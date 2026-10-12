@@ -1,79 +1,145 @@
-  CrowdWisdomTrading Macro Economics Agent
+ CrowdWisdomTrading Macro Economics Agent
  Final Project Report
 
  1. Project Overview
-The project explores a data-driven workflow for collecting US macroeconomic indicators, analyzing economic news sentiment, and evaluating a baseline moving-average trading strategy against a buy-and-hold benchmark.
+
+This project implements a research prototype for collecting US macroeconomic data, analyzing economic news sentiment, engineering market features, and evaluating baseline and machine-learning-assisted strategy configurations.
+
+The project compares a moving-average strategy with buy-and-hold and evaluates historical results using chronological holdout and expanding-window validation.
 
  2. Technologies Used
-- Python
-- pandas and NumPy
+
+- Python, pandas, and NumPy
+- scikit-learn for Random Forest regression
 - yfinance for historical market data
 - FRED API for macroeconomic observations
-- Apify for economic calendar data
+- Apify economic-calendar integration
 - News ingestion and keyword-based sentiment analysis
 - Matplotlib for visualizations
 - pytest for automated testing
 
  3. Data Collection
-- Market data: 501 SPY daily observations from 10 October 2024 to 9 October 2026.
-- FRED data: 23 observations across unemployment, CPI, federal funds rate, and nonfarm payrolls.
-- Economic calendar: 10 events across one unique event date.
-- News: 5 articles with 5 unique URLs.
 
- 4. Data Validation
-The SPY dataset passed the existing checks for duplicate dates, missing values, positive prices, and valid OHLC relationships.
+- **Market data:** 501 SPY daily observations from 10 October 2024 to 9 October 2026.
+- **FRED data:** 23 observations across unemployment, CPI, federal funds rate, and nonfarm payrolls.
+- **Economic calendar:** 10 events across one unique event date.
+- **News:** 5 articles with 5 unique URLs, published from 4 June to 16 September 2026.
 
-The FRED dataset passed six validation checks, including indicator coverage, date validity, missing numeric values, and duplicate date-indicator pairs.
+The calendar and news samples are limited and should be treated as prototype data rather than comprehensive historical coverage.
 
-The automated test suite reported 18 passing tests.
+ 4. Data Validation and Tests
 
- 5. Baseline Strategy
-A 20-day versus 50-day moving-average rule generates long exposure when the short moving average exceeds the long moving average. Positions are shifted by one trading day before calculating strategy returns.
+The SPY dataset passed existing checks for duplicate dates, missing values, positive prices, and valid OHLC relationships.
+
+The FRED dataset passed six validation checks covering indicator coverage, date validity, missing numeric values, and duplicate date-indicator pairs.
+
+The automated test suite completed with **18 passing tests** at the time of evaluation.
+
+ 5. Baseline Moving-Average Strategy
+
+The baseline strategy uses a 20-day moving average and a 50-day moving average. It takes long exposure when the short moving average exceeds the long moving average. Positions are shifted by one trading day before returns are calculated.
 
 Full-period results:
-- Strategy total return: 24.14%
-- Buy-and-hold total return: 38.26%
-- Strategy annualized volatility: 9.96%
-- Buy-and-hold annualized volatility: 16.51%
-- Strategy Sharpe ratio: 1.14
-- Buy-and-hold Sharpe ratio: 1.07
-- Strategy maximum drawdown: -8.68%
-- Buy-and-hold maximum drawdown: -18.76%
+
+| Metric | Strategy | Buy and hold |
+|---|---:|---:|
+| Total return | 24.14% | 38.26% |
+| Annualized volatility | 9.96% | 16.51% |
+| Sharpe ratio | 1.14 | 1.07 |
+| Sortino ratio | 1.64 | 1.60 |
+| Maximum drawdown | -8.68% | -18.76% |
+
+The strategy produced a lower total return but also lower volatility and a smaller maximum drawdown over the full sample.
 
  6. Chronological Holdout Evaluation
+
 The development period contains 350 observations, from 10 October 2024 to 5 March 2026. The holdout period contains 151 observations, from 6 March 2026 to 9 October 2026.
 
-Holdout results:
-- Strategy total return: 10.45%
-- Buy-and-hold total return: 15.17%
-- Strategy annualized volatility: 10.63%
-- Buy-and-hold annualized volatility: 13.40%
-- Strategy Sharpe ratio: 1.61
-- Buy-and-hold Sharpe ratio: 1.83
-- Strategy maximum drawdown: -4.49%
-- Buy-and-hold maximum drawdown: -6.57%
+| Metric | Strategy | Buy and hold |
+|---|---:|---:|
+| Total return | 10.45% | 15.17% |
+| Annualized volatility | 10.63% | 13.40% |
+| Sharpe ratio | 1.61 | 1.83 |
+| Sortino ratio | 2.50 | 2.87 |
+| Maximum drawdown | -4.49% | -6.57% |
 
-The strategy had lower volatility and a smaller maximum drawdown, but it underperformed buy and hold on total return, Sharpe ratio, and Sortino ratio in the holdout period.
+In this holdout period, the strategy had lower volatility and a smaller drawdown, but lower return and lower Sharpe and Sortino ratios than buy-and-hold.
 
- 7. News Sentiment and Macro Readiness
-The project includes keyword-based news sentiment analysis and sentiment visualizations. The current news sample contains only five articles, and all articles received the same sentiment label. These findings are exploratory and do not validate sentiment as a trading signal.
+ 7. Five-Split Expanding-Window Evaluation
 
-The economic calendar contains only ten events across one unique date. It is insufficient for meaningful macro-event strategy evaluation. FRED observation dates also do not necessarily represent public release dates, and the collected data do not include consensus forecasts.
+The fixed 20-day/50-day strategy was evaluated over five sequential test windows using an expanding training window.
 
- 8. Limitations
-- Transaction costs, slippage, and taxes are excluded.
-- A zero risk-free rate is assumed in the reported Sharpe and Sortino calculations.
-- The holdout evaluation is a single chronological split, not rolling walk-forward validation.
-- The news sample and economic calendar coverage are limited.
-- Keyword sentiment is not a validated market predictor.
-- FRED observations may be revised and cannot be assumed to have been publicly available on their observation dates.
-- Historical performance does not establish future profitability.
+| Average test-fold metric | Strategy | Buy and hold |
+|---|---:|---:|
+| Total return per fold | 4.34% | 5.51% |
+| Annualized return | 14.59% | 18.30% |
+| Annualized volatility | 10.52% | 15.65% |
+| Sharpe ratio | 1.204 | 1.519 |
+| Sortino ratio | 1.883 | 2.323 |
+| Maximum drawdown | -4.66% | -7.75% |
 
- 9. Conclusion
-The project implements a working prototype for market-data ingestion, macroeconomic data collection, basic news sentiment analysis, strategy evaluation, visualization, and data-quality reporting.
+These are descriptive averages of fold-level metrics, not the return or drawdown of one compounded portfolio. The strategy is fixed rather than retrained in each fold. Transaction costs, slippage, taxes, and market impact are excluded.
 
-The baseline strategy showed lower volatility and smaller drawdowns than buy and hold over the full historical period, but lower total return. In the holdout period, it also underperformed buy and hold on return and risk-adjusted ratios.
+ 8. ML Strategy-Permutation Model
 
-Further work should expand the economic calendar and news datasets, incorporate release-time-aware and point-in-time data, evaluate transaction costs, and conduct repeated chronological validation before drawing conclusions about the predictive value of macroeconomic signals.
+A Random Forest regressor was trained to estimate next-day strategy returns for five moving-average configurations:
 
-This project is for research and educational purposes and does not establish a profitable trading system.
+- 5/20 days
+- 10/30 days
+- 20/50 days
+- 20/100 days
+- 50/100 days
+
+The model uses lagged market returns, historical volatility, momentum, moving-average gap, and configuration windows. The dataset was split chronologically, with approximately 80% of unique dates used for training and 20% for testing. Five sequential time-series folds were also used for additional prediction-error checks.
+
+Holdout model results:
+
+- Training rows: 1,728
+- Test rows: 480
+- Mean absolute error (MAE): 0.005124
+- Root mean squared error (RMSE): 0.007019
+
+The model outputs estimated daily returns and a per-configuration summary. MAE and RMSE measure prediction error; they do not establish profitability. The model is based on a small historical sample, and its predictions may be unstable across market regimes.
+
+The ML model currently uses market-derived features. It does **not** yet incorporate macroeconomic event or news sentiment features into its return predictions. The five-fold strategy evaluation in Section 7 is for the fixed moving-average strategy, while the ML model has its own chronological evaluation and fold-level error checks.
+
+ 9. News Sentiment and Visualizations
+
+News sentiment is calculated using a keyword-based baseline method. The current sample contains five articles, all classified as negative by that method.
+
+Generated visualization files:
+
+- `reports/figures/sentiment_distribution.png`
+- `reports/figures/sentiment_scores.png`
+- `reports/figures/macro_sentiment_over_time.png`
+
+The time-series chart uses actual publication timestamps in UTC. Five observations over a limited period are insufficient to establish a reliable sentiment trend or validate sentiment as a trading signal.
+
+ 10. Economic Calendar and Macro Data Limitations
+
+The current economic calendar contains ten events across one unique date, so it is insufficient for robust event-study or macro-driven strategy evaluation. Only three events have both actual and forecast values in the current sample.
+
+FRED observation dates do not necessarily equal publication or release dates. The available data do not provide a complete point-in-time record of when each value became publicly available, and some historical values can be revised.
+
+ 11. Limitations and Future Work
+
+- Expand calendar coverage across the full requested historical period.
+- Collect more news articles and validate sentiment labels.
+- Incorporate release-time-aware macroeconomic data and consensus forecasts.
+- Add macro features to the ML model only after sufficient aligned historical data are available.
+- Evaluate realistic transaction costs, slippage, taxes, and market impact.
+- Compare configurations using nested or otherwise leakage-aware model selection.
+- Assess performance across additional assets and market regimes.
+- Review the model and reports before using predictions for any practical decision.
+
+Historical performance and model estimates do not guarantee future results.
+
+ 12. Conclusion
+
+The project provides a working prototype for market-data ingestion, macroeconomic data collection, feature engineering, keyword-based sentiment analysis, baseline strategy evaluation, ML strategy-permutation predictions, chronological validation, visualization, and data-quality reporting.
+
+The baseline strategy showed lower volatility and smaller drawdowns than buy-and-hold in the reported periods, while generally producing lower returns in the holdout and walk-forward comparisons. The ML model provides estimated returns for several moving-average configurations, but its error metrics do not demonstrate a profitable trading advantage.
+
+The economic calendar and news samples remain too limited to support strong conclusions about macroeconomic predictive power. Broader data coverage, point-in-time alignment, cost-aware evaluation, and further out-of-sample testing are needed.
+
+**Research and educational prototype only. This project does not establish a profitable trading system or provide investment advice.**

@@ -1,0 +1,33 @@
+ML STRATEGY-PERMUTATION EVALUATION
+
+Source: spy_historical_prices.csv
+Configurations: [(5, 20), (10, 30), (20, 50), (20, 100), (50, 100)]
+Unique dates: 480
+Training dates: 2024-11-08 to 2026-05-22
+Test dates: 2026-05-26 to 2026-10-09
+
+Holdout MAE (daily return): 0.005124
+Holdout RMSE (daily return): 0.007019
+
+Per-configuration holdout summary:
+ short_window  long_window  test_days  actual_total_return_pct  predicted_mean_daily_return_pct  actual_mean_daily_return_pct  prediction_mae
+           20          100         96                 4.945294                         0.147762                      0.053318        0.006163
+           50          100         96                 4.945294                         0.133671                      0.053318        0.006148
+           20           50         96                 4.945294                         0.087331                      0.053318        0.006105
+           10           30         96                -2.567206                         0.053362                     -0.025431        0.003929
+            5           20         96                -3.768175                         0.041272                     -0.038793        0.003277
+
+Five-fold chronological error checks:
+ fold test_start   test_end      mae     rmse
+    1 2025-03-10 2025-07-02 0.003562 0.006053
+    2 2025-07-03 2025-10-24 0.005037 0.006406
+    3 2025-10-27 2026-02-20 0.005121 0.007055
+    4 2026-02-23 2026-06-16 0.003978 0.006431
+    5 2026-06-17 2026-10-09 0.004662 0.006091
+
+Limitations:
+- This is a small historical SPY dataset.
+- Predictions are estimates, not guaranteed returns or profitability.
+- No transaction costs, slippage, taxes, or market impact are included.
+- Strategy rankings may change across market regimes.
+- Macro event and news features are not included in this model yet.
